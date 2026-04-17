@@ -1,0 +1,36 @@
+class Solution {
+    public int divide(int dividend, int divisor) {
+        // Handle overflow case: -2^31 / -1 = 2^31 (which exceeds 2^31 - 1)
+        if (dividend == Integer.MIN_VALUE && divisor == -1) {
+            return Integer.MAX_VALUE;
+        }
+
+        // Determine the sign of the result
+        boolean isNegative = (dividend < 0) ^ (divisor < 0);
+
+        // Use long to prevent overflow during absolute value conversion
+        long lDividend = Math.abs((long) dividend);
+        long lDivisor = Math.abs((long) divisor);
+        
+        int quotient = 0;
+
+        // Exponential subtraction using bit shifting
+        while (lDividend >= lDivisor) {
+            long tempDivisor = lDivisor;
+            int numShifts = 0;
+
+            // Double the divisor until it's larger than the remaining dividend
+            while (lDividend >= (tempDivisor << 1)) {
+                tempDivisor <<= 1;
+                numShifts++;
+            }
+
+            // Subtract the largest power of 2 * divisor found
+            lDividend -= tempDivisor;
+            // Add the corresponding power of 2 to the quotient
+            quotient += (1 << numShifts);
+        }
+
+        return isNegative ? -quotient : quotient;
+    }
+}
