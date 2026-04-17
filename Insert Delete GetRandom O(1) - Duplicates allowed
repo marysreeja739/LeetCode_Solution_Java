@@ -1,0 +1,70 @@
+import java.util.*;
+
+class RandomizedCollection {
+    private List<Integer> list;
+    private Map<Integer, Set<Integer>> map;
+    private Random rand;
+
+    public RandomizedCollection() {
+        list = new ArrayList<>();
+        map = new HashMap<>();
+        rand = new Random();
+    }
+    
+    public boolean insert(int val) {
+        boolean notPresent = !map.containsKey(val);
+        
+        // Ensure there is a set for this value
+        if (notPresent) {
+            map.put(val, new LinkedHashSet<>());
+        }
+        
+        // Add current index to the set of indices for this value
+        map.get(val).add(list.size());
+        list.add(val);
+        
+        return notPresent;
+    }
+    
+    public boolean remove(int val) {
+        if (!map.containsKey(val) || map.get(val).isEmpty()) return false;
+        
+        // 1. Get an index of the value to remove
+        int indexToRemove = map.get(val).iterator().next();
+        map.get(val).remove(indexToRemove);
+        
+        int lastElement = list.get(list.size() - 1);
+        int lastIndex = list.size() - 1;
+
+        // 2. If the element to remove is NOT the last element, swap it
+        if (indexToRemove < lastIndex) {
+            list.set(indexToRemove, lastElement);
+            
+            // Update the index set for the last element
+            map.get(lastElement).remove(lastIndex);
+            map.get(lastElement).add(indexToRemove);
+        }
+        
+        // 3. Remove the last item from the list
+        list.remove(lastIndex);
+        
+        // Clean up the map if no indices are left for this value
+        if (map.get(val).isEmpty()) {
+            map.remove(val);
+        }
+        
+        return true;
+    }
+    
+    public int getRandom() {
+        return list.get(rand.nextInt(list.size()));
+    }
+}
+
+/**
+ * Your RandomizedCollection object will be instantiated and called as such:
+ * RandomizedCollection obj = new RandomizedCollection();
+ * boolean param_1 = obj.insert(val);
+ * boolean param_2 = obj.remove(val);
+ * int param_3 = obj.getRandom();
+ */
