@@ -1,0 +1,62 @@
+import java.util.TreeMap;
+
+class SummaryRanges {
+    // Key = Start of interval, Value = End of interval
+    private TreeMap<Integer, Integer> intervals;
+
+    public SummaryRanges() {
+        intervals = new TreeMap<>();
+    }
+    
+    public void addNum(int value) {
+        if (intervals.containsKey(value)) return;
+
+        // Find the closest intervals before and after the new value
+        Integer lowKey = intervals.floorKey(value); // Interval starting at or before 'value'
+        Integer highKey = intervals.higherKey(value); // Interval starting strictly after 'value'
+
+        // Case 1: value is already covered by the lowKey interval
+        if (lowKey != null && intervals.get(lowKey) >= value) {
+            return;
+        }
+
+        boolean connectedToLow = (lowKey != null && intervals.get(lowKey) == value - 1);
+        boolean connectedToHigh = (highKey != null && highKey == value + 1);
+
+        if (connectedToLow && connectedToHigh) {
+            // Case 2: Bridges two intervals (e.g., [1,1] + 2 + [3,3] -> [1,3])
+            intervals.put(lowKey, intervals.get(highKey));
+            intervals.remove(highKey);
+        } else if (connectedToLow) {
+            // Case 3a: Extends the end of the lower interval
+            intervals.put(lowKey, value);
+        } else if (connectedToHigh) {
+            // Case 3b: Extends the start of the higher interval
+            int end = intervals.get(highKey);
+            intervals.remove(highKey);
+            intervals.put(value, end);
+        } else {
+            // Case 4: Isolated new interval
+            intervals.put(value, value);
+        }
+    }
+    
+    public int[][] getIntervals() {
+        int[][] result = new int[intervals.size()][2];
+        int i = 0;
+        for (var entry : intervals.entrySet()) {
+            result[i][0] = entry.getKey();
+            result[i][1] = entry.getValue();
+            i++;
+        }
+        return result;
+    }
+}
+
+
+/**
+ * Your SummaryRanges object will be instantiated and called as such:
+ * SummaryRanges obj = new SummaryRanges();
+ * obj.addNum(value);
+ * int[][] param_2 = obj.getIntervals();
+ */
