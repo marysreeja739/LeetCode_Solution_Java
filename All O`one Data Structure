@@ -1,0 +1,95 @@
+import java.util.*;
+
+class AllOne {
+    // 1. Define a Bucket (Node) to hold strings with the same count
+    class Node {
+        int count;
+        Set<String> keys = new HashSet<>();
+        Node prev, next;
+        Node(int c) { this.count = c; }
+    }
+
+    private Node head, tail; // Dummy head and tail
+    private Map<String, Node> map; // Map string -> Node
+
+    public AllOne() {
+        head = new Node(0);
+        tail = new Node(0);
+        head.next = tail;
+        tail.prev = head;
+        map = new HashMap<>();
+    }
+
+    public void inc(String key) {
+        if (map.containsKey(key)) {
+            moveKey(key, 1);
+        } else {
+            // New key: add to bucket with count 1
+            if (head.next.count != 1) addNodeAfter(head, new Node(1));
+            head.next.keys.add(key);
+            map.put(key, head.next);
+        }
+    }
+
+    public void dec(String key) {
+        Node currNode = map.get(key);
+        if (currNode.count == 1) {
+            map.remove(key);
+        } else {
+            moveKey(key, -1);
+        }
+        currNode.keys.remove(key);
+        if (currNode.keys.isEmpty()) removeNode(currNode);
+    }
+
+    public String getMaxKey() {
+        return tail.prev == head ? "" : tail.prev.keys.iterator().next();
+    }
+
+    public String getMinKey() {
+        return head.next == tail ? "" : head.next.keys.iterator().next();
+    }
+
+    // --- Helper Methods ---
+
+    private void moveKey(String key, int delta) {
+        Node currNode = map.get(key);
+        int nextCount = currNode.count + delta;
+        Node targetNode;
+
+        if (delta == 1) {
+            if (currNode.next.count != nextCount) addNodeAfter(currNode, new Node(nextCount));
+            targetNode = currNode.next;
+        } else {
+            if (currNode.prev.count != nextCount) addNodeAfter(currNode.prev, new Node(nextCount));
+            targetNode = currNode.prev;
+        }
+
+        targetNode.keys.add(key);
+        map.put(key, targetNode);
+        currNode.keys.remove(key);
+        if (currNode.keys.isEmpty()) removeNode(currNode);
+    }
+
+    private void addNodeAfter(Node prevNode, Node newNode) {
+        newNode.next = prevNode.next;
+        newNode.prev = prevNode;
+        prevNode.next.prev = newNode;
+        prevNode.next = newNode;
+    }
+
+    private void removeNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+}
+
+
+/**
+ * Your AllOne object will be instantiated and called as such:
+ * AllOne obj = new AllOne();
+ * obj.inc(key);
+ * obj.dec(key);
+ * String param_3 = obj.getMaxKey();
+ * String param_4 = obj.getMinKey();
+ */
