@@ -1,0 +1,39 @@
+class Solution {
+    public void nextPermutation(int[] nums) {
+        if (nums == null || nums.length <= 1) return;
+
+        int pivot = -1;
+        // 1. Find the first decreasing element from the right
+        for (int i = nums.length - 2; i >= 0; i--) {
+            if (nums[i] < nums[i + 1]) {
+                pivot = i;
+                break;
+            }
+        }
+
+        // 2. If pivot exists, find the successor to swap with
+        if (pivot != -1) {
+            for (int i = nums.length - 1; i > pivot; i--) {
+                if (nums[i] > nums[pivot]) {
+                    swap(nums, i, pivot);
+                    break;
+                }
+            }
+        }
+
+        // 3. Reverse the suffix (everything to the right of the pivot)
+        reverse(nums, pivot + 1, nums.length - 1);
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    private void reverse(int[] nums, int start, int end) {
+        while (start < end) {
+            swap(nums, start++, end--);
+        }
+    }
+}
