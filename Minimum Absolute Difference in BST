@@ -1,0 +1,25 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int getMinimumDifference(struct TreeNode* root){
+    int minDiff = INT_MAX; 
+    int prevVal = -1;     
+    void inOrder(struct TreeNode* node) {
+        if (node == NULL) {
+            return;
+        }
+        inOrder(node->left);
+        if (prevVal != -1) {
+            minDiff = (node->val - prevVal < minDiff) ? (node->val - prevVal):minDiff;
+        }
+        prevVal = node->val;
+        inOrder(node->right);
+    }
+    inOrder(root);
+    return minDiff;
+}
