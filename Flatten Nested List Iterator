@@ -1,0 +1,59 @@
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * public interface NestedInteger {
+ *
+ *     // @return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // Return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Return empty list if this NestedInteger holds a single integer
+ *     public List<NestedInteger> getList();
+ * }
+ */
+import java.util.*;
+
+public class NestedIterator implements Iterator<Integer> {
+    // Stack to store the elements in reverse order for LIFO processing
+    private Deque<NestedInteger> stack = new ArrayDeque<>();
+
+    public NestedIterator(List<NestedInteger> nestedList) {
+        // Push elements from right to left so the first element is at the top
+        prepareStack(nestedList);
+    }
+
+    @Override
+    public Integer next() {
+        // hasNext() is guaranteed to be called before next()
+        return stack.pop().getInteger();
+    }
+
+    @Override
+    public boolean hasNext() {
+        // Keep unpacking the top element if it's a list until we find an integer
+        while (!stack.isEmpty()) {
+            if (stack.peek().isInteger()) {
+                return true;
+            }
+            // If it's a list, pop it and push its contents back onto the stack
+            prepareStack(stack.pop().getList());
+        }
+        return false;
+    }
+
+    private void prepareStack(List<NestedInteger> list) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            stack.push(list.get(i));
+        }
+    }
+}
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i = new NestedIterator(nestedList);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
