@@ -1,0 +1,92 @@
+import java.util.*;
+
+class LFUCache {
+    class Node {
+        int key, val, freq;
+        Node prev, next;
+        Node(int k, int v) { this.key = k; this.val = v; this.freq = 1; }
+    }
+
+    class DLList {
+        Node head, tail;
+        int size;
+        DLList() {
+            head = new Node(0, 0);
+            tail = new Node(0, 0);
+            head.next = tail; tail.prev = head;
+        }
+        void add(Node node) {
+            node.next = head.next;
+            node.next.prev = node;
+            head.next = node;
+            node.prev = head;
+            size++;
+        }
+        void remove(Node node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            size--;
+        }
+    }
+
+    private int capacity, minFreq;
+    private Map<Integer, Node> cache;
+    private Map<Integer, DLList> freqMap;
+
+    public LFUCache(int capacity) {
+        this.capacity = capacity;
+        this.minFreq = 0;
+        this.cache = new HashMap<>();
+        this.freqMap = new HashMap<>();
+    }
+
+    public int get(int key) {
+        if (!cache.containsKey(key)) return -1;
+        Node node = cache.get(key);
+        updateFreq(node);
+        return node.val;
+    }
+
+    public void put(int key, int value) {
+        if (capacity == 0) return;
+        if (cache.containsKey(key)) {
+            Node node = cache.get(key);
+            node.val = value;
+            updateFreq(node);
+        } else {
+            if (cache.size() == capacity) {
+                DLList minList = freqMap.get(minFreq);
+                cache.remove(minList.tail.prev.key);
+                minList.remove(minList.tail.prev);
+            }
+            Node newNode = new Node(key, value);
+            cache.put(key, newNode);
+            minFreq = 1; // Reset minFreq to 1 for a brand new element
+            DLList newList = freqMap.getOrDefault(1, new DLList());
+            newList.add(newNode);
+            freqMap.put(1, newList);
+        }
+    }
+
+    private void updateFreq(Node node) {
+        int f = node.freq;
+        DLList oldList = freqMap.get(f);
+        oldList.remove(node);
+        
+        // If minFreq list is empty, increment minFreq
+        if (f == minFreq && oldList.size == 0) minFreq++;
+        
+        node.freq++;
+        DLList newList = freqMap.getOrDefault(node.freq, new DLList());
+        newList.add(node);
+        freqMap.put(node.freq, newList);
+    }
+}
+
+
+/**
+ * Your LFUCache object will be instantiated and called as such:
+ * LFUCache obj = new LFUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
