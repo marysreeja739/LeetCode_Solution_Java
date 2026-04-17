@@ -1,0 +1,19 @@
+int max(int a, int b) { return a > b ? a : b; }
+
+int robHelper(const int *nums, int start, int end) {
+    int p1 = 0, p2 = 0;
+    for (int i = start; i <= end; ++i) {
+        int curr = max(nums[i] + p2, p1);
+        int temp = p1;
+        p1 = curr;
+        p2 = temp;
+    }
+    return p1;
+}
+int rob(int *nums, int numsSize) {
+    if (numsSize == 0) return 0;
+    if (numsSize == 1) return nums[0];
+    int a = robHelper(nums, 0, numsSize - 2);
+    int b = robHelper(nums, 1, numsSize - 1);
+    return max(a, b);
+}
