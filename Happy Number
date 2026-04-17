@@ -1,0 +1,31 @@
+int sumofdigit(int n)
+{
+    int sum=0;
+    while(n>0)
+    {
+        int r=n%10;
+        n=n/10;
+        sum=sum+r*r;
+    }
+    return sum;
+}
+bool isHappy(int n) {
+    int sum=0;
+    if(n==1)
+    {
+        return true;
+    }
+    while(n>4)
+    {
+        sum=sumofdigit(n);
+        if(sum==1)
+        {
+            return true;
+        }
+        else
+        {
+            n= sum;
+        }
+    }
+    return false;
+}
