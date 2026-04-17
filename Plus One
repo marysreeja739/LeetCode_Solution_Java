@@ -1,0 +1,22 @@
+class Solution {
+    public int[] plusOne(int[] digits) {
+        int n = digits.length;
+
+        // Iterate from the back (least significant digit)
+        for (int i = n - 1; i >= 0; i--) {
+            if (digits[i] < 9) {
+                // No carry needed, just increment and return
+                digits[i]++;
+                return digits;
+            }
+            
+            // If the digit is 9, it becomes 0 and carry moves to the left
+            digits[i] = 0;
+        }
+
+        // If the loop finishes, it means all digits were 9 (e.g., 999 -> 1000)
+        int[] result = new int[n + 1];
+        result[0] = 1; // The rest are initialized to 0 by default in Java
+        return result;
+    }
+}
