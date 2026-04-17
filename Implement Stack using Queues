@@ -1,0 +1,46 @@
+class MyStack {
+    public int[] arr=new int[10];
+    public int top;
+
+    public MyStack() {
+        top=0;
+    }
+    
+    public void push(int x) {
+        if (top == arr.length) {
+            throw new IllegalStateException("Stack Overflow: Stack is full.");
+        }
+        arr[top] = x;
+        top++; 
+    }
+
+    public int pop() {
+        if (empty()) {
+            throw new IllegalStateException("Stack Underflow: Stack is empty.");
+        }
+        top--;
+        return arr[top]; 
+    }
+
+    public int top() {
+        if (empty()) {
+            
+            throw new IllegalStateException("Stack is empty: No top element.");
+        }
+        return arr[top - 1]; 
+    }
+
+    public boolean empty() {
+        return top == 0; 
+    }
+}
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack obj = new MyStack();
+ * obj.push(x);
+ * int param_2 = obj.pop();
+ * int param_3 = obj.top();
+ * boolean param_4 = obj.empty();
+ */
+ 
