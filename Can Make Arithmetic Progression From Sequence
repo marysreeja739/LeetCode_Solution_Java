@@ -1,0 +1,20 @@
+import java.util.Arrays;
+
+class Solution {
+    public boolean canMakeArithmeticProgression(int[] arr) {
+        // 1. Sort the array to bring numbers into sequence
+        Arrays.sort(arr);
+        
+        // 2. Find the required difference from the first two elements
+        int diff = arr[1] - arr[0];
+        
+        // 3. Check if every subsequent pair maintains this difference
+        for (int i = 2; i < arr.length; i++) {
+            if (arr[i] - arr[i - 1] != diff) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
