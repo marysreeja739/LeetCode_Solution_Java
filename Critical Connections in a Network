@@ -1,0 +1,85 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int* discovery_time;
+int* low_link;
+int* visited;
+int timer;
+int** graph; 
+int* graph_sizes;
+int** bridges_result; 
+int bridge_count;
+
+#define MAX_CONNECTIONS 100005 
+
+
+void dfs_bridges(int u, int parent_edge) {
+    visited[u] = 1;
+    discovery_time[u] = low_link[u] = ++timer;
+    for (int i = 0; i < graph_sizes[u]; i++) {
+        int v = graph[u][i];
+        if (v == parent_edge) continue; 
+        if (visited[v]) {
+            if (low_link[u] > discovery_time[v]) {
+                low_link[u] = discovery_time[v];
+            }
+        } else {
+            dfs_bridges(v, u);
+            if (low_link[u] > low_link[v]) {
+                low_link[u] = low_link[v];
+            }
+            if (discovery_time[u] < low_link[v]) {
+                bridges_result[bridge_count][0] = u;
+                bridges_result[bridge_count][1] = v;
+                bridge_count++;
+            }
+        }
+    }
+}
+
+int** criticalConnections(int n, int** connections, int connectionsSize, int* connectionsColSize, int* returnSize, int** returnColumnSizes) {
+    timer = 0;
+    bridge_count = 0;
+    discovery_time = (int*)malloc(n * sizeof(int));
+    low_link = (int*)malloc(n * sizeof(int));
+    visited = (int*)calloc(n, sizeof(int)); 
+    graph_sizes = (int*)calloc(n, sizeof(int));
+    graph = (int**)malloc(n * sizeof(int*));
+    bridges_result = (int**)malloc(MAX_CONNECTIONS * sizeof(int*));
+    for(int i = 0; i < MAX_CONNECTIONS; i++) {
+        bridges_result[i] = (int*)malloc(2 * sizeof(int));
+    }
+    for (int i = 0; i < connectionsSize; i++) {
+        graph_sizes[connections[i][0]]++;
+        graph_sizes[connections[i][1]]++;
+    }
+    for (int i = 0; i < n; i++) {
+        graph[i] = (int*)malloc(graph_sizes[i] * sizeof(int));
+        graph_sizes[i] = 0; 
+    }
+    for (int i = 0; i < connectionsSize; i++) {
+        int u = connections[i][0];
+        int v = connections[i][1];
+        graph[u][graph_sizes[u]++] = v;
+        graph[v][graph_sizes[v]++] = u;
+    }
+    dfs_bridges(0, -1);
+    *returnSize = bridge_count;
+    *returnColumnSizes = (int*)malloc(bridge_count * sizeof(int));
+    for (int i = 0; i < bridge_count; i++) {
+        (*returnColumnSizes)[i] = 2; 
+    }
+    bridges_result = (int**)realloc(bridges_result, bridge_count * sizeof(int*));
+    free(discovery_time);
+    free(low_link);
+    free(visited);
+    for (int i = 0; i < n; i++) {
+        free(graph[i]);
+    }
+    free(graph);
+    free(graph_sizes);
+
+    return bridges_result;
+}
