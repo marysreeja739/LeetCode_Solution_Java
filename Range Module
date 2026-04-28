@@ -1,0 +1,65 @@
+import java.util.TreeMap;
+import java.util.Map;
+
+class RangeModule {
+    // Stores ranges as start -> end
+    private TreeMap<Integer, Integer> map;
+
+    public RangeModule() {
+        map = new TreeMap<>();
+    }
+    
+    public void addRange(int left, int right) {
+        // Find intervals that might overlap with [left, right)
+        Integer start = map.floorKey(left);
+        Integer end = map.floorKey(right);
+        
+        // Adjust left if the previous interval overlaps
+        if (start != null && map.get(start) >= left) {
+            left = start;
+        }
+        // Adjust right if the current interval covering 'right' extends further
+        if (end != null && map.get(end) > right) {
+            right = map.get(end);
+        }
+        
+        // Remove all intervals that are now swallowed by our new [left, right)
+        map.subMap(left, right).clear();
+        map.put(left, right);
+    }
+    
+    public boolean queryRange(int left, int right) {
+        // Find the interval that starts at or before 'left'
+        Integer start = map.floorKey(left);
+        // If such an interval exists and its end is >= 'right', the range is covered
+        return start != null && map.get(start) >= right;
+    }
+    
+    public void removeRange(int left, int right) {
+        // Find intervals that might be affected
+        Integer start = map.floorKey(left);
+        Integer end = map.floorKey(right);
+        
+        // If an interval covers 'right', we might need to keep the part after 'right'
+        if (end != null && map.get(end) > right) {
+            map.put(right, map.get(end));
+        }
+        
+        // If an interval covers 'left', we might need to keep the part before 'left'
+        if (start != null && map.get(start) > left) {
+            map.put(start, left);
+        }
+        
+        // Clear all intervals completely inside the [left, right) gap
+        map.subMap(left, right).clear();
+    }
+}
+
+
+/**
+ * Your RangeModule object will be instantiated and called as such:
+ * RangeModule obj = new RangeModule();
+ * obj.addRange(left,right);
+ * boolean param_2 = obj.queryRange(left,right);
+ * obj.removeRange(left,right);
+ */
