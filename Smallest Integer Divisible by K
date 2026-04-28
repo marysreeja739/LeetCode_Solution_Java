@@ -1,0 +1,25 @@
+class Solution {
+    public int smallestRepunitDivByK(int k) {
+        // 1. If k is even or ends in 5, no number of 1s will ever be divisible by it
+        if (k % 2 == 0 || k % 5 == 0) {
+            return -1;
+        }
+
+        int remainder = 0;
+        
+        // 2. Try every length from 1 up to k
+        // It is mathematically proven that if a solution exists, 
+        // it must be found within k iterations.
+        for (int length = 1; length <= k; length++) {
+            // Update the remainder: (PreviousRemainder * 10 + 1) % k
+            remainder = (remainder * 10 + 1) % k;
+            
+            // 3. If remainder is 0, we found the smallest n
+            if (remainder == 0) {
+                return length;
+            }
+        }
+
+        return -1;
+    }
+}
