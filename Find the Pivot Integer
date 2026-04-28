@@ -1,0 +1,16 @@
+class Solution {
+    public int pivotInteger(int n) {
+        // 1. Calculate the total sum from 1 to n
+        int totalSum = n * (n + 1) / 2;
+        
+        // 2. Based on the derivation x^2 = totalSum
+        int x = (int) Math.sqrt(totalSum);
+        
+        // 3. Check if x squared actually equals totalSum
+        if (x * x == totalSum) {
+            return x;
+        }
+        
+        return -1;
+    }
+}
