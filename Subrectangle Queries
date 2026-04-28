@@ -1,0 +1,38 @@
+import java.util.*;
+
+class SubrectangleQueries {
+    private int[][] rectangle;
+    private List<int[]> history;
+
+    public SubrectangleQueries(int[][] rectangle) {
+        this.rectangle = rectangle;
+        this.history = new ArrayList<>();
+    }
+    
+    public void updateSubrectangle(int row1, int col1, int row2, int col2, int newValue) {
+        // Just record the update: [r1, c1, r2, c2, value]
+        history.add(new int[]{row1, col1, row2, col2, newValue});
+    }
+    
+    public int getValue(int row, int col) {
+        // Search history from newest to oldest
+        for (int i = history.size() - 1; i >= 0; i--) {
+            int[] update = history.get(i);
+            // If the coordinate is inside this update's box
+            if (row >= update[0] && row <= update[2] && 
+                col >= update[1] && col <= update[3]) {
+                return update[4];
+            }
+        }
+        // If no updates covered it, return the original value
+        return rectangle[row][col];
+    }
+}
+
+
+/**
+ * Your SubrectangleQueries object will be instantiated and called as such:
+ * SubrectangleQueries obj = new SubrectangleQueries(rectangle);
+ * obj.updateSubrectangle(row1,col1,row2,col2,newValue);
+ * int param_2 = obj.getValue(row,col);
+ */
