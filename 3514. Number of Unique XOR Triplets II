@@ -1,0 +1,42 @@
+class Solution {
+    public int uniqueXorTriplets(int[] nums) {
+        // Find the maximum value in the array to dynamically size our bit tracking arrays
+        int maxVal = 0;
+        for (int x : nums) {
+            maxVal = Math.max(maxVal, x);
+        }
+        
+        // The maximum possible XOR value will be less than the next power of 2
+        int bitSize = 1;
+        while (bitSize <= maxVal) {
+            bitSize <<= 1;
+        }
+        int limit = bitSize <<= 1; // Double the size to handle additional bits flipped during XOR combinations
+
+        // Step 1: Pre-calculate all possible pairs (A ^ B)
+        boolean[] validPairs = new boolean[limit];
+        for (int a : nums) {
+            for (int b : nums) {
+                validPairs[a ^ b] = true;
+            }
+        }
+
+        // Step 2: Combine the precalculated pairs with a third element (A ^ B) ^ C
+        int[] finalTriplets = new int[limit];
+        for (int ab = 0; ab < limit; ab++) {
+            if (validPairs[ab]) {
+                for (int c : nums) {
+                    finalTriplets[ab ^ c] = 1;
+                }
+            }
+        }
+
+        // Step 3: Count total unique numbers that were flagged
+        int totalUniqueXor = 0;
+        for (int flag : finalTriplets) {
+            totalUniqueXor += flag;
+        }
+
+        return totalUniqueXor;
+    }
+}
