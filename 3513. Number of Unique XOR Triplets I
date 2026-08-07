@@ -1,0 +1,19 @@
+class Solution {
+    public int uniqueXorTriplets(int[] nums) {
+        int n = nums.length;
+        
+        // Base case: For n = 1, unique XOR triplet is always 1
+        if (n == 1) {
+            return 1;
+        }
+        
+        // Base case: For n = 2, unique XOR triplets can only be 2 values (e.g., 1 and 2)
+        if (n == 2) {
+            return 2;
+        }
+        
+        // For n >= 3, the answer is the smallest power of 2 strictly greater than n
+        int bits = 32 - Integer.numberOfLeadingZeros(n);
+        return 1 << bits;
+    }
+}
