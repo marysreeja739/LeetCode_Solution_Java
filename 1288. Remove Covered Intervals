@@ -1,0 +1,25 @@
+class Solution {
+    public int removeCoveredIntervals(int[][] intervals) {
+        // Sort primarily by Start Time (Ascending)
+        // Sort secondarily by End Time (Descending)
+        Arrays.sort(intervals, (a, b) -> {
+            if (a[0] == b[0]) return Integer.compare(b[1], a[1]);
+            return Integer.compare(a[0], b[0]);
+        });
+        
+        int removed = 0;
+        int maxEnd = 0; // Tracks the furthest we can currently reach
+        
+        for (int[] interval : intervals) {
+            if (interval[1] <= maxEnd) {
+                // If this interval ends before our current max reach, it's swallowed!
+                removed++;
+            } else {
+                // Otherwise, it extends our reach
+                maxEnd = interval[1];
+            }
+        }
+        
+        return intervals.length - removed;
+    }
+}
